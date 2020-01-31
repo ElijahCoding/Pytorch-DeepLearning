@@ -1,0 +1,2 @@
+MNIST/raw filter=lfs diff=lfs merge=lfs -text
+MNIST/processed filter=lfs diff=lfs merge=lfs -text

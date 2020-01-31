@@ -1,0 +1,14 @@
+Data/bank.csv filter=lfs diff=lfs merge=lfs -text
+Data/sinewave.csv filter=lfs diff=lfs merge=lfs -text
+Data/MNIST filter=lfs diff=lfs merge=lfs -text
+Data/NYCTaxiFares.csv filter=lfs diff=lfs merge=lfs -text
+Data/UK_Food filter=lfs diff=lfs merge=lfs -text
+Data/shakespeare.txt filter=lfs diff=lfs merge=lfs -text
+Data/FashionMNIST filter=lfs diff=lfs merge=lfs -text
+Data/TimeSeriesData filter=lfs diff=lfs merge=lfs -text
+Data/meditations_by_marcus_aurelius.txt filter=lfs diff=lfs merge=lfs -text
+Data/war_and_peace.txt filter=lfs diff=lfs merge=lfs -text
+Data/iris.csv filter=lfs diff=lfs merge=lfs -text
+Data/pride_and_prejudice.txt filter=lfs diff=lfs merge=lfs -text
+Data/Images filter=lfs diff=lfs merge=lfs -text
+Data/TomSawyer.txt filter=lfs diff=lfs merge=lfs -text
