@@ -1,4 +1,11 @@
+# 1） Design model (3wr)
+# 2) Construct loss and optimizer
+# 3) Training loop
+#  - forward pass: ocmpute prediction
+#  - backward pass: gradients
+#  - update weights
 import torch
+import torch.nn as nn
 
 # f = w * x
 
@@ -13,15 +20,14 @@ def forward(x):
     return w * x
 
 # loss = MSE
-def loss(y, y_predicted):
-    return ((y_predicted - y)**2).mean()
-
+def loss(y, y_pred):
+    return ((y_pred - y)**2).mean()
 
 print(f'Prediction before training: f(5) = {forward(5):.3f}')
 
 # Training
 learning_rate = 0.01
-n_iters = 100
+n_iters = 10000
 
 for epoch in range(n_iters):
     # prediction = forward pass
@@ -37,9 +43,10 @@ for epoch in range(n_iters):
     with torch.no_grad():
         w -= learning_rate * w.grad
 
+    # zero gradients
     w.grad.zero_()
 
-    if epoch % 1 == 0:
+    if epoch % 10 == 0:
         print(f'epoch {epoch+1}: w = {w:.3f}, loss = {l:.8f}')
 
 print(f'Prediction after training: f(5) = {forward(5):.3f}')
