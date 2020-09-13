@@ -19,3 +19,27 @@ class WineDataset(Dataset):
     def __len__(self):
         # len(dataset)
         return self.n_samples
+
+dataset = WineDataset()
+# get first sample and unpack
+first_data = dataset[0]
+features, labels = first_data
+print(features, labels)
+
+# load whole dataset with Dataloader
+# shufffle: shuffle data, good  for training
+# num_workers: faster loading with multiple subprocesses
+# !!! IF YOU GET AN ERROR DURING LOADING, SET num_workers TO 0 !!!
+
+train_loader = DataLoader(dataset=dataset, batch_size=4, shuffle=True, num_workers=2)
+
+# convert to an iterator and look at one random example
+dataiter = iter(train_loader)
+data = dataiter.next()
+features, labels = data
+print(features, labels)
+
+# Dummy Training loop
+num_epochs = 2
+total_samples = len(dataset)
+n_iterations = math.ceil(total_samples/4)
