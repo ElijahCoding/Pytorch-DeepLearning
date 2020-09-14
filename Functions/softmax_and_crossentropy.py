@@ -101,3 +101,20 @@ print(f'Batch Loss2: {l2.item():.4f}')
 _, predictions1 = torch.max(Y_pred_good, 1)
 _, predictions2 = torch.max(Y_pred_bad, 1)
 print(f'Actual class: {Y}, Y_pred1: {predictions1}, Y_pred2: {predictions2}')
+
+# Binary classification
+class NerualNet(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(NerualNet, self).__init__()
+        self.linear1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        output = self.linear1(x)
+        output = self.relu(output)
+        output = self.linear2(output)
+        return output
+
+model = NerualNet(input_size=28*28, hidden_size=5, num_classes=3)
+criterion = nn.CrossEntropyLoss()
