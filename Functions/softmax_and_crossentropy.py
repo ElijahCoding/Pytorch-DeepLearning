@@ -103,18 +103,39 @@ _, predictions2 = torch.max(Y_pred_bad, 1)
 print(f'Actual class: {Y}, Y_pred1: {predictions1}, Y_pred2: {predictions2}')
 
 # Binary classification
-class NerualNet(nn.Module):
-    def __init__(self, input_size, hidden_size, num_classes):
-        super(NerualNet, self).__init__()
+class NerualNet1(nn.Module):
+    def __init__(self, input_size, hidden_size):
+        super(NerualNet1, self).__init__()
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.relu = nn.ReLU()
-        self.linear2 = nn.Linear(hidden_size, num_classes)
+        self.linear2 = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
         output = self.linear1(x)
         output = self.relu(output)
         output = self.linear2(output)
-        return output
+        y_pred = torch.sigmoid(output)
+        return y_pred
 
-model = NerualNet(input_size=28*28, hidden_size=5, num_classes=3)
-criterion = nn.CrossEntropyLoss()
+model = NerualNet1(input_size=28*28, hidden_size=5)
+criterion = nn.BCELoss()
+
+
+# Multiclass problem
+class NeuralNet2(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(NeuralNet2, self).__init__()
+        self.linear1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        out = self.linear1(x)
+        out = self.relu(out)
+        out = self.linear2(out)
+        # no softmax at the end
+        return out
+
+
+model = NeuralNet2(input_size=28 * 28, hidden_size=5, num_classes=3)
+criterion = nn.CrossEntropyLoss()  # (applies Softmax)
