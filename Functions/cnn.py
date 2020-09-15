@@ -46,3 +46,33 @@ classes = ('plane', 'car', 'bird', 'cat',
 
 class ConvNet(nn.Module):
     pass
+
+model = ConvNet().to(device)
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+n_total_steps = len(train_loader)
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        #  origin shape: [4, 3, 32, 32]
+        # input_layer: 3 input channels, 6 output channels, 5 kernel size
+        images = images.to(device)
+        labels = labels.to(device)
+
+        # forward
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+
+        # backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if (i + 1) % 2000 == 0:
+            print(f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{n_total_steps}], Loss: {loss.item():.4f}')
+
+print('Finished Training')
+PATH = './cnn.path'
+torch.save(model.state_dict(), PATH)
+
