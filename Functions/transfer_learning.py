@@ -87,3 +87,28 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=100):
             running_corrects = 0
 
             # iterate over data
+            for inputs, labels in dataloaders[phase]:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # forward
+                # track history if only in train
+                with torch.set_grad_enabled(phase == 'train'):
+                    outputs = model(inputs)
+                    _, preds = torch.max(outputs, 1)
+                    loss = criterion(outputs, labels)
+
+                    # backward + optimize only if in training phase
+                    if phase == 'train':
+                        optimizer.zero_grad()
+                        loss.backward()
+                        optimizer.step()
+
+                # statistics
+                running_loss += loss.item() * inputs.shape[0]
+                running_corrects += torch.sum(preds == labels.data)
+
+            if  phase == 'train':
+                scheduler.step()
+
+            
