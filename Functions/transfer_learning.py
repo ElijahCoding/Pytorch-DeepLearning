@@ -34,3 +34,56 @@ data_transforms = {
         transforms.Normalize(mean, std)
     ]),
 }
+
+data_dir = 'hymenoptera_data'
+sets = ['train', 'val']
+
+image_datasets = {
+    x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'val']
+}
+dataloaders = {
+    x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4, shuffle=True, num_workers=2)
+    for x in ['train', 'val']
+}
+class_names = image_datasets['train'].classes
+print(class_names)
+
+def imshow(inp, title):
+    """Imshow for Tensor."""
+    inp = inp.numpy().transpose((1, 2, 0))
+    inp = std * inp + mean
+    inp = np.clip(inp, 0, 1)
+    plt.imshow(inp)
+    plt.title(title)
+    plt.show()
+
+
+# Get a batch of training data
+inputs, classes = next(iter(dataloaders['train']))
+
+# Make a grid from batch
+out = torchvision.utils.make_grid(inputs)
+
+imshow(out, title=[class_names[x] for x in classes])
+
+def train_model(model, criterion, optimizer, scheduler, num_epochs=100):
+    since = time.time()
+
+    best_model_wts = copy.deepcopy(model.state_dict())
+    best_acc = 0.0
+
+    for epoch in range(num_epochs):
+        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        print('-' * 10)
+
+        # each epoch ha a training and validation phase
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                model.train() # set model to training mode
+            else:
+                model.eval() # set model to evaluate mode
+
+            running_loss = 0.0
+            running_corrects = 0
+
+            # iterate over data
