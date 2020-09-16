@@ -18,7 +18,7 @@ import copy
 mean = np.array([0.5, 0.5, 0.5])
 std = np.array([0.25, 0.25, 0.25])
 
-device = torch.device('cuda' if torch.cuda.is_available else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 data_transforms = {
     'train': transforms.Compose([
@@ -65,7 +65,7 @@ inputs, classes = next(iter(dataloaders['train']))
 # Make a grid from batch
 out = torchvision.utils.make_grid(inputs)
 
-imshow(out, title=[class_names[x] for x in classes])
+# imshow(out, title=[class_names[x] for x in classes])
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=100):
     since = time.time()
@@ -134,3 +134,43 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=100):
     return model
 
 
+model = models.resnet18(pretrained=True)
+num_ftrs = model.fc.in_features
+
+model.fc = nn.Linear(num_ftrs, 2)
+model.to(device)
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(model.parameters(),  lr=0.001)
+
+# scheduler
+step_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+
+model_conv = train_model(model, criterion, optimizer,
+                         step_lr_scheduler, num_epochs=25)
+
+
+#### ConvNet as fixed feature extractor ####
+# Here, we need to freeze all the network except the final layer.
+# We need to set requires_grad == False to freeze the parameters so that the gradients are not computed in backward()
+model_conv = torchvision.models.resnet18(pretrained=True)
+for param in model_conv.parameters():
+    param.requires_grad = False
+
+# Parameters of newly constructed modules have requires_grad=True by default
+num_ftrs = model_conv.fc.in_features
+model_conv.fc = nn.Linear(num_ftrs, 2)
+
+model_conv = model_conv.to(device)
+
+criterion = nn.CrossEntropyLoss()
+
+# Observe that only parameters of final layer are being optimized as
+# opposed to before.
+optimizer_conv = optim.SGD(model_conv.fc.parameters(), lr=0.001, momentum=0.9)
+
+# Decay LR by a factor of 0.1 every 7 epochs
+exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
+
+model_conv = train_model(model_conv, criterion, optimizer_conv,
+                         exp_lr_scheduler, num_epochs=25)
