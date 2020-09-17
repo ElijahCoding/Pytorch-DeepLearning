@@ -58,3 +58,56 @@ loaded_model.eval()
 print(loaded_model.state_dict())
 
 #### load checkpoint ####
+learning_rate = 0.01
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+checkpoint = {
+"epoch": 90,
+"model_state": model.state_dict(),
+"optim_state": optimizer.state_dict()
+}
+print(optimizer.state_dict())
+
+FILE = "checkpoint.pth"
+torch.save(checkpoint, FILE)
+
+model = Model(n_input_features=6)
+optimizer = optimizer = torch.optim.SGD(model.parameters(), lr=0)
+
+checkpoint = torch.load(FILE)
+model.load_state_dict(checkpoint['model_state'])
+optimizer.load_state_dict(checkpoint['optim_state'])
+epoch = checkpoint['epoch']
+
+model.eval()
+
+print(optimizer.state_dict())
+
+""" SAVING ON GPU/CPU 
+# 1) Save on GPU, Load on CPU
+device = torch.device("cuda")
+model.to(device)
+torch.save(model.state_dict(), PATH)
+device = torch.device('cpu')
+model = Model(*args, **kwargs)
+model.load_state_dict(torch.load(PATH, map_location=device))
+
+# 2) Save on GPU, Load on GPU
+device = torch.device("cuda")
+model.to(device)
+torch.save(model.state_dict(), PATH)
+model = Model(*args, **kwargs)
+model.load_state_dict(torch.load(PATH))
+model.to(device)
+# Note: Be sure to use the .to(torch.device('cuda')) function 
+# on all model inputs, too!
+
+# 3) Save on CPU, Load on GPU
+torch.save(model.state_dict(), PATH)
+device = torch.device("cuda")
+model = Model(*args, **kwargs)
+model.load_state_dict(torch.load(PATH, map_location="cuda:0"))  # Choose whatever GPU device number you want
+model.to(device)
+# This loads the model to a given GPU device. 
+# Next, be sure to call model.to(torch.device('cuda')) to convert the model’s parameter tensors to CUDA tensors
+"""
